@@ -1,0 +1,18 @@
+{
+    "name": "ngine",
+    "version": "0.0.1",
+    "description": "Simple webserver + webframework for node",
+    "main": "index.js",
+    "scripts": {
+
+    },
+    "repository": "git://github.com/aheinze/ngine",
+    "author": "Artur Heinze",
+    "contributors": [],
+    "keywords": ["ngine", "framework", "server", "http", "web", "router"],
+    "license": "MIT",
+    "dependencies": {},
+    "engines": {
+        "node": "*"
+    }
+}
