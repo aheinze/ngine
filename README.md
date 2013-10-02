@@ -19,7 +19,7 @@ Simple webserver + webframework for node
 
 (The MIT License)
 
-Copyright (c) 2013 Artur
+Copyright (c) 2013 Artur Heinze
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
