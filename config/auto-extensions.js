@@ -50,15 +50,23 @@ module.exports = {
     },
 
     "coffee": function(filename, req, res) {
-        
-        console.log(Object.keys(coffee));
 
         fs.readFile(filename, "utf-8", function(err, content) {
 
             if(err) {
                 res.finalize(String(err), 500, "text/plain");
             } else {
-                res.finalize(coffee.CoffeeScript.compile(content), 200, "application/x-javascript");
+                
+                var status = 200;
+
+                try {
+                    content = coffee.CoffeeScript.compile(content);
+                }catch(e){
+                    status  = 500;
+                    content = e.message;
+                }
+
+                res.finalize(content, status, "application/x-javascript");
             }
         });
     },
