@@ -20,7 +20,7 @@ Ngine.autoext   = require('./config/auto-extensions.js');
 
 
 Ngine.session   = {
-    "autostart": true,
+    "autostart": false,
     "name"     : "nginesession",
     "handler"  : "memory"
 };
@@ -162,6 +162,8 @@ Ngine.listen = function(port) {
 
     var $ngine = this;
 
+    $ngine.events.emit('before');
+
     this.server = http.createServer(function(req, res){
 
         var uri = url.parse(req.url);
@@ -224,6 +226,8 @@ Ngine.listen = function(port) {
                 res.setHeader("Pragma", "no-cache");
             }
         });
+
+        $ngine.events.emit('request', req, res);
 
         if(req.method=='POST' && utils.hasBody(req)) {
 
