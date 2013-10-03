@@ -6,6 +6,7 @@ var http  = require("http"),
     qs    = require("./lib/querystring.js"),
     utils = require("./lib/utils.js"),
     session = require("./lib/session.js"),
+    storage = require("./lib/storage.js"),
 
     EventEmitter = require("fs").EventEmitter;
 
@@ -29,7 +30,8 @@ Ngine.session.handlers.memory = require("./lib/sessions/memory.js");
 Ngine.port      = 3000;
 Ngine.public    = false;
 
-Ngine.service     = utils.serviceContainer(Ngine);
+Ngine.service   = utils.serviceContainer(Ngine);
+Ngine.storage   = storage.select("ngine-storage");
 
 Ngine.set = function() {
 
