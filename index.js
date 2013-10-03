@@ -5,15 +5,15 @@ var http  = require("http"),
     fs    = require("fs"),
     qs    = require("./lib/querystring.js"),
     utils = require("./lib/utils.js"),
+
     session = require("./lib/session.js"),
     storage = require("./lib/storage.js"),
+    router  = require('./lib/router.js'),
 
     EventEmitter = require("events").EventEmitter;
 
 var Ngine = $self = {};
 
-Ngine.events    = new EventEmitter();
-Ngine.router    = require('./lib/router.js');
 Ngine.template  = require("./lib/ejs.js")
 Ngine.mimeTypes = require('./config/mime-types.js');
 Ngine.autoext   = require('./config/auto-extensions.js');
@@ -33,6 +33,27 @@ Ngine.public    = false;
 
 Ngine.service   = utils.serviceContainer(Ngine);
 Ngine.storage   = storage.select("ngine-storage");
+
+Ngine.events    = new EventEmitter();
+
+// router
+
+Ngine._routes = [];
+
+Ngine.get = function(path, cb) {
+    this._routes.push(["GET", path, cb]);
+};
+
+Ngine.post = function(path, cb) {
+    this._routes.push(["POST", path, cb]);
+};
+
+Ngine.all = function(path, cb) {
+    this._routes.push(["ALL", path, cb]);
+};
+
+Ngine.router = Object.create(router);
+
 
 Ngine.set = function() {
 
@@ -82,7 +103,7 @@ Ngine.responsehandler = (function(){
         return function(req, res) {
 
             var pathname = req.uri.pathname,
-                route    = $self.router.match(pathname);
+                route    = req.$ngine.router.dispatch(pathname);
 
             if(route) {
 
@@ -156,7 +177,7 @@ Ngine.responsehandler = (function(){
 })();
 
 
-Ngine.listen = function(port) {
+Ngine.listen = function(port, configcb) {
 
     if(port) this.port = parseInt(port, 10);
 
@@ -181,14 +202,16 @@ Ngine.listen = function(port) {
         });
 
         utils.patchobject(res, {
-            "view404": path.join(__dirname,'views/404.html'),
+            "views": {
+                "404": path.join(__dirname,'views/404.html')
+            },
             "finalize": function(content, status, type) {
 
                 status = status || 200;
                 type   = type   || "text/html";
 
                 if(status==404) {
-                    fs.readFile(res.view404, "binary", function(err, content) {
+                    fs.readFile(res.views["404"], "binary", function(err, content) {
 
                         if(err) {
                             res.finalize(String(err), 500, "text/plain");
@@ -227,7 +250,18 @@ Ngine.listen = function(port) {
             }
         });
 
+        // register routes
+        $ngine._routes.forEach(function(conf){
+            if(req.method==conf[0] || conf[0]=="ALL") {
+                $ngine.router.register(conf[1], conf[2]);
+            }
+        });
+
         $ngine.events.emit('request', req, res);
+
+        if(configcb) {
+            configcb.apply($ngine, [req, res]);
+        }
 
         if(req.method=='POST' && utils.hasBody(req)) {
 
