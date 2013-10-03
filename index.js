@@ -3,8 +3,9 @@ var http  = require("http"),
     url   = require("url"),
     path  = require("path"),
     fs    = require("fs"),
-    qs    = require('./lib/querystring.js'),
-    utils = require('./lib/utils.js'),
+    qs    = require("./lib/querystring.js"),
+    utils = require("./lib/utils.js"),
+    session = require("./lib/session.js"),
 
     EventEmitter = require("fs").EventEmitter;
 
@@ -15,10 +16,20 @@ Ngine.template  = require("./lib/ejs.js")
 Ngine.mimeTypes = require('./config/mime-types.js');
 Ngine.autoext   = require('./config/auto-extensions.js');
 
+
+Ngine.session   = {
+    "autostart": true,
+    "name"     : "nginesession",
+    "handler"  : "memory"
+};
+
+Ngine.session.handlers = {};
+Ngine.session.handlers.memory = require("./lib/sessions/memory.js");
+
 Ngine.port      = 3000;
 Ngine.public    = false;
 
-Ngine.service   = utils.serviceContainer(Ngine);
+Ngine.service     = utils.serviceContainer(Ngine);
 
 Ngine.set = function() {
 
@@ -158,6 +169,7 @@ Ngine.listen = function(port) {
             "postdata" : {},
             "getdata": qs.parse(uri.query),
             "route": false,
+            "session": session(req, res, Ngine.session),
             "param": function(key, def) {
                 return req.postdata[key] || req.getdata[key] || def;
             }
