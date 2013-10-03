@@ -8,10 +8,11 @@ var http  = require("http"),
     session = require("./lib/session.js"),
     storage = require("./lib/storage.js"),
 
-    EventEmitter = require("fs").EventEmitter;
+    EventEmitter = require("events").EventEmitter;
 
 var Ngine = $self = {};
 
+Ngine.events    = new EventEmitter();
 Ngine.router    = require('./lib/router.js');
 Ngine.template  = require("./lib/ejs.js")
 Ngine.mimeTypes = require('./config/mime-types.js');
