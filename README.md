@@ -22,6 +22,25 @@ Et voila you have a static webserver running with some gimmicks:
 - you can link __.less__ and __.coffee__ files directly e.g. &lt;link href="css/site.less" rel="stylesheet"&gt;
 
 
+## Routing
+
+    var ngine = require('ngine');
+
+    ngine.get('/test', function(req, res){
+        res.finalize("test");
+    });
+
+    ngine.post('/test', function(req, res){
+        res.finalize(req.param("anyfield"));
+    });
+
+    ngine.all('/frontpage', function(req, res){
+        res.finalize("frontpage...");
+    });
+
+    ngine.listen(3000);
+
+
 ## License
 
 (The MIT License)
