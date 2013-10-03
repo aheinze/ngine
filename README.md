@@ -15,6 +15,13 @@ Simple webserver + webframework for node
     ngine.listen(3000);
 
 
+Et voila you have a static webserver running with some gimmicks:
+
+- index.html and index.ejs are recognized as entry points for folders (e.g. http://localhost:3000/anyfolder)
+- __.md__ and __.markdown__ files will be auto-rendered to html (e.g. http://localhost:3000/page.md)
+- you can link __.less__ files directly e.g. &lt;link href="css/site.less" rel="stylesheet"&gt;
+
+
 ## License
 
 (The MIT License)
